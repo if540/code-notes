@@ -6,6 +6,15 @@
       alt="Code Notes logo"
     />
     <div class="is-pulled-right">
+      <a
+        id="thumb-tack"
+        :class="{'isActive': isAlwaysOnTop}"
+        @click="pin(!isAlwaysOnTop)"
+        title="Windows always on top"
+      >
+        <b-icon icon="thumb-tack"></b-icon>
+      </a>
+
       <a id="help" @click="helpTokenModalActive = true" title="Help">
         <b-icon icon="question-circle"></b-icon>
       </a>
@@ -82,13 +91,20 @@ export default {
       appVersion: remote.app.getVersion(),
       aboutCodeNotesModalActive: false,
       helpTokenModalActive: false,
+      isAlwaysOnTop: remote.getCurrentWindow().isAlwaysOnTop()
     };
   },
   methods: {
     open(link) {
       this.$electron.shell.openExternal(link);
     },
-  },
+    pin(isTop) {
+      let win = remote.getCurrentWindow();
+      let level = isTop ? "floating" : "normal";
+      win.setAlwaysOnTop(isTop, level, 0);
+      this.isAlwaysOnTop = isTop;
+    }
+  }
 };
 </script>
 
@@ -111,11 +127,18 @@ nav {
 
   #about-code-notes,
   #github,
-  #help {
+  #help,
+  #thumb-tack {
     color: $light;
     position: relative;
     top: 20px;
     right: 20px;
+  }
+  #thumb-tack {
+    opacity: 0.5;
+  }
+  #thumb-tack.isActive {
+    opacity: 1;
   }
 
   .modal {
